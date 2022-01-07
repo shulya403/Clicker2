@@ -4,6 +4,8 @@ from webdriver_manager.firefox import DriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 #from selenium.webdriver.common.proxy import *
 import requests
 import random
@@ -13,232 +15,25 @@ import pandas as pd
 from datetime import datetime as dt
 import sys
 
-class Clicker(object):
-
-    def __init__(self):
-
-        #proxy_ = "93.171.164.251:8080"
-        proxy_ = [
-            "109.248.249.33:8081",
-            "178.49.188.53:8080",
-            "91.217.42.2:8080",
-            "79.120.3.122:80",
-            "176.32.185.22:8080"
-            # "139.180.165.197:3128",
-            # "169.57.1.84:8123",
-            # "163.172.168.124:3128",
-            # "35.169.156.54:3128",
-            # "169.57.1.84:25",
-            # "169.57.1.85:25",
-            # "173.192.128.238:25"
-        ]
-        
-        user_agents = [
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11.5; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Mozilla/5.0 (X11; Linux i686; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Mozilla/5.0 (Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11.5; rv:78.0) Gecko/20100101 Firefox/78.0",
-            "Mozilla/5.0 (X11; Linux i686; rv:78.0) Gecko/20100101 Firefox/78.0",
-            "Mozilla/5.0 (Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-            "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:78.0) Gecko/20100101 Firefox/78.0",
-            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-            "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15",
-            "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0)",
-            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; WOW64; Trident/4.0;)",
-            "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)",
-            "Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.0)",
-            "Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.1)",
-            "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)",
-            "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2)",
-            "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko",
-            "Mozilla/5.0 (Windows NT 6.2; Trident/7.0; rv:11.0) like Gecko",
-            "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
-            "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 OPR/78.0.4093.112",
-            "Mozilla/5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 OPR/78.0.4093.112",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 OPR/78.0.4093.112",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 OPR/78.0.4093.112",
-            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-            "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-            "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 YaBrowser/21.6.0 Yowser/2.5 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 YaBrowser/21.6.0 Yowser/2.5 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 YaBrowser/21.6.0 Yowser/2.5 Safari/537.36",
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/92.0.4515.90 Mobile/15E148 Safari/604.1",
-            "Mozilla/5.0 (iPad; CPU OS 14_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/92.0.4515.90 Mobile/15E148 Safari/604.1",
-            "Mozilla/5.0 (iPod; CPU iPhone OS 14_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/92.0.4515.90 Mobile/15E148 Safari/604.1",
-            "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-            "Mozilla/5.0 (Linux; Android 10; SM-A205U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-            "Mozilla/5.0 (Linux; Android 10; SM-A102U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-            "Mozilla/5.0 (Linux; Android 10; SM-G960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-            "Mozilla/5.0 (Linux; Android 10; SM-N960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-            "Mozilla/5.0 (Linux; Android 10; LM-Q720) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-            "Mozilla/5.0 (Linux; Android 10; LM-X420) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 11_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/35.0 Mobile/15E148 Safari/605.1.15",
-            "Mozilla/5.0 (iPad; CPU OS 11_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/35.0 Mobile/15E148 Safari/605.1.15",
-            "Mozilla/5.0 (iPod touch; CPU iPhone OS 11_5_1 like Mac OS X) AppleWebKit/604.5.6 (KHTML, like Gecko) FxiOS/35.0 Mobile/15E148 Safari/605.1.15",
-            "Mozilla/5.0 (Linux; Android 10; LM-Q710(FGN)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-            "Mozilla/5.0 (Android 11; Mobile; rv:68.0) Gecko/68.0 Firefox/90.0",
-            "Mozilla/5.0 (Android 11; Mobile; LG-M255; rv:90.0) Gecko/90.0 Firefox/90.0",
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1",
-            "Mozilla/5.0 (iPad; CPU OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1",
-            "Mozilla/5.0 (iPod touch; CPU iPhone 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1",
-            "Mozilla/5.0 (Linux; Android 10; HD1913) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 EdgA/46.6.4.5160",
-            "Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 EdgA/46.6.4.5160",
-            "Mozilla/5.0 (Linux; Android 10; Pixel 3 XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 EdgA/46.6.4.5160",
-            "Mozilla/5.0 (Linux; Android 10; ONEPLUS A6003) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 EdgA/46.6.4.5160",
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 EdgiOS/46.3.13 Mobile/15E148 Safari/605.1.15",
-            "Mozilla/5.0 (Windows Mobile 10; Android 10.0; Microsoft; Lumia 950XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 Edge/40.15254.603",
-            "Mozilla/5.0 (Linux; Android 10; VOG-L29) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 OPR/63.3.3216.58675",
-            "Mozilla/5.0 (Linux; Android 10; SM-G970F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 OPR/63.3.3216.58675",
-            "Mozilla/5.0 (Linux; Android 10; SM-N975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 OPR/63.3.3216.58675",
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 YaBrowser/21.6.3.883 Mobile/15E148 Safari/604.1",
-            "Mozilla/5.0 (iPad; CPU OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 YaBrowser/21.6.3.883 Mobile/15E148 Safari/605.1",
-            "Mozilla/5.0 (iPod touch; CPU iPhone 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 YaBrowser/21.6.3.883 Mobile/15E148 Safari/605.1",
-            "Mozilla/5.0 (Linux; arm_64; Android 11; SM-G965F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 YaBrowser/21.3.4.59 Mobile Safari/537.36"
-            ]
-
-        for i in range(len(user_agents)):
-            options = webdriver.ChromeOptions()
-            # options.add_argument('--headless')
-            #options.add_argument('--user-agent=%s' % use,1080")
-            #options.add_argument('--proxy-server=%s' % proxy_[i])
-
-            try:
-                self.driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-                self.driver.get("https://www.itbestsellers.ru/")
-                # site = self.driver.find_element_by_tag_name("title").text
-                # print("site:", site)
-                # print(EC.presence_of_element_located((By.TAG_NAME, "title")))
-                self.element = WebDriverWait(self.driver, 1).\
-                    until(EC.presence_of_element_located((By.NAME, "itbs_top_adv")))
-                #self.element.click()
-                #self.driver.get("https://yandex.ru/internet/")
-                # self.element = WebDriverWait(self.driver, 1).\
-                #     until(EC.presence_of_element_located((By.CLASS_NAME, "parameter-header__title")))
-                if self.element:
-                    print("Сработал: ", proxy_[i])
-
-            except Exception:
-                try:
-                    response = requests.get("https://yandex.ru/internet/",
-                                            proxies={"https": proxy_[i]})
-                    print(response.status_code, proxy_[i])
-                except requests.exceptions.ProxyError:
-                    print("Requests none", proxy_[i])
 
 class Clicker_simple(object):
-    
-    
 
     def __init__(self,
                  site,
                  counter=0,
-                 logfile="log.xlsx",
+                 #logfile="log.xlsx",
                  ip="мой домашний",
                  headless="y"):
-        # self.user_agents = [
-        #     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-        #     "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-        #     "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-        #     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-        #     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-        #     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:90.0) Gecko/20100101 Firefox/90.0",
-        #     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11.5; rv:90.0) Gecko/20100101 Firefox/90.0",
-        #     "Mozilla/5.0 (X11; Linux i686; rv:90.0) Gecko/20100101 Firefox/90.0",
-        #     "Mozilla/5.0 (Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0",
-        #     "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:90.0) Gecko/20100101 Firefox/90.0",
-        #     "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0",
-        #     "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0",
-        #     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0",
-        #     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11.5; rv:78.0) Gecko/20100101 Firefox/78.0",
-        #     "Mozilla/5.0 (X11; Linux i686; rv:78.0) Gecko/20100101 Firefox/78.0",
-        #     "Mozilla/5.0 (Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-        #     "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:78.0) Gecko/20100101 Firefox/78.0",
-        #     "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-        #     "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
-        #     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15",
-        #     "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0)",
-        #     "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; WOW64; Trident/4.0;)",
-        #     "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)",
-        #     "Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.0)",
-        #     "Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.1)",
-        #     "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)",
-        #     "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2)",
-        #     "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko",
-        #     "Mozilla/5.0 (Windows NT 6.2; Trident/7.0; rv:11.0) like Gecko",
-        #     "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
-        #     "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko",
-        #     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67",
-        #     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67",
-        #     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 OPR/78.0.4093.112",
-        #     "Mozilla/5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 OPR/78.0.4093.112",
-        #     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 OPR/78.0.4093.112",
-        #     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 OPR/78.0.4093.112",
-        #     "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-        #     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-        #     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-        #     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-        #     "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Vivaldi/4.1",
-        #     "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 YaBrowser/21.6.0 Yowser/2.5 Safari/537.36",
-        #     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 YaBrowser/21.6.0 Yowser/2.5 Safari/537.36",
-        #     "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 YaBrowser/21.6.0 Yowser/2.5 Safari/537.36",
-        #     "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/92.0.4515.90 Mobile/15E148 Safari/604.1",
-        #     "Mozilla/5.0 (iPad; CPU OS 14_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/92.0.4515.90 Mobile/15E148 Safari/604.1",
-        #     "Mozilla/5.0 (iPod; CPU iPhone OS 14_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/92.0.4515.90 Mobile/15E148 Safari/604.1",
-        #     "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-        #     "Mozilla/5.0 (Linux; Android 10; SM-A205U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-        #     "Mozilla/5.0 (Linux; Android 10; SM-A102U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-        #     "Mozilla/5.0 (Linux; Android 10; SM-G960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-        #     "Mozilla/5.0 (Linux; Android 10; SM-N960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-        #     "Mozilla/5.0 (Linux; Android 10; LM-Q720) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-        #     "Mozilla/5.0 (Linux; Android 10; LM-X420) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-        #     "Mozilla/5.0 (iPhone; CPU iPhone OS 11_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/35.0 Mobile/15E148 Safari/605.1.15",
-        #     "Mozilla/5.0 (iPad; CPU OS 11_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/35.0 Mobile/15E148 Safari/605.1.15",
-        #     "Mozilla/5.0 (iPod touch; CPU iPhone OS 11_5_1 like Mac OS X) AppleWebKit/604.5.6 (KHTML, like Gecko) FxiOS/35.0 Mobile/15E148 Safari/605.1.15",
-        #     "Mozilla/5.0 (Linux; Android 10; LM-Q710(FGN)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36",
-        #     "Mozilla/5.0 (Android 11; Mobile; rv:68.0) Gecko/68.0 Firefox/90.0",
-        #     "Mozilla/5.0 (Android 11; Mobile; LG-M255; rv:90.0) Gecko/90.0 Firefox/90.0",
-        #     "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1",
-        #     "Mozilla/5.0 (iPad; CPU OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1",
-        #     "Mozilla/5.0 (iPod touch; CPU iPhone 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1",
-        #     "Mozilla/5.0 (Linux; Android 10; HD1913) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 EdgA/46.6.4.5160",
-        #     "Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 EdgA/46.6.4.5160",
-        #     "Mozilla/5.0 (Linux; Android 10; Pixel 3 XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 EdgA/46.6.4.5160",
-        #     "Mozilla/5.0 (Linux; Android 10; ONEPLUS A6003) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 EdgA/46.6.4.5160",
-        #     "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 EdgiOS/46.3.13 Mobile/15E148 Safari/605.1.15",
-        #     "Mozilla/5.0 (Windows Mobile 10; Android 10.0; Microsoft; Lumia 950XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 Edge/40.15254.603",
-        #     "Mozilla/5.0 (Linux; Android 10; VOG-L29) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 OPR/63.3.3216.58675",
-        #     "Mozilla/5.0 (Linux; Android 10; SM-G970F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 OPR/63.3.3216.58675",
-        #     "Mozilla/5.0 (Linux; Android 10; SM-N975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Mobile Safari/537.36 OPR/63.3.3216.58675",
-        #     "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 YaBrowser/21.6.3.883 Mobile/15E148 Safari/604.1",
-        #     "Mozilla/5.0 (iPad; CPU OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 YaBrowser/21.6.3.883 Mobile/15E148 Safari/605.1",
-        #     "Mozilla/5.0 (iPod touch; CPU iPhone 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 YaBrowser/21.6.3.883 Mobile/15E148 Safari/605.1",
-        #     "Mozilla/5.0 (Linux; arm_64; Android 11; SM-G965F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 YaBrowser/21.3.4.59 Mobile Safari/537.36"
-        #     ]
 
         self.options = webdriver.ChromeOptions()
 
         if headless == "y":
             self.options.add_argument('--headless')
         self.options.add_argument('--disable-gpu')
+        self.options.add_argument('disable-infobars')
         #self.options.add_argument("--window-size=1920,1080")
         # self.options.add_argument('--proxy-server=%s' % proxy_[i])
+
         self.user_agents_base = pd.read_excel("headers_data/user_agents.xlsx")
         self.user_agents_base = self.user_agents_base[self.user_agents_base['Ok'] == 1]['User-Agents']
         self.proxie_list_actual = []
@@ -267,6 +62,7 @@ class Clicker_simple(object):
                     "itbs_left_adv"
                 ],
                 "home_page": "HOME itbestsellers.ru",
+                "title_is": "Бестселлеры ИТ-рынка. Аналитика российского рынка ИТ",
                 "exclude": [
                     "Номера",
                     "Форумы",
@@ -282,11 +78,12 @@ class Clicker_simple(object):
                     ]
         },
             "https://www.bytemag.ru/": {
-                'banner_list': ['byte_left_adv',
+                "banner_list": ['byte_left_adv',
                                 'itbs_right_adv',
                                 'byte_center_adv',
                                 'byte_top_adv'],
-                'home_page': "HOME bytemag.ru",
+                "home_page": "HOME bytemag.ru",
+                "title_is": "BYTE/Россия",
                 "exclude": [
                     "byte@bytemag.ru",
                     "Корпоративная подписка",
@@ -315,9 +112,10 @@ class Clicker_simple(object):
         self.banner_list = self.Sites[self.site]["banner_list"]
         self.site_home = self.Sites[self.site]["home_page"]
 
-    def Proxie_try(self,
-                   user_agent='--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"',
-                   proxie_base="https://hidemy.name/ru/proxy-list/?country=BYKZLVRUUAUZ#list"):
+    def Proxie_try(self, site,
+                   user_agent,
+                   proxie_base="https://hidemy.name/ru/proxy-list/?country=BYKZLVRUUAUZ#list"
+                   ):
 
         options = webdriver.ChromeOptions()
         #options.add_argument(user_agent)
@@ -329,13 +127,15 @@ class Clicker_simple(object):
         else:
             try:
                 driver_proxie_base = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+                driver_proxie_base.set_window_size(1920, 1080)
                 driver_proxie_base.get(proxie_base)
                 tbl_on_proxie_page = pd.read_html(driver_proxie_base.page_source)
                 proxy_table = tbl_on_proxie_page[0]
-                # proxy_table = proxy_table[proxy_table['Тип'] == 'HTTPS']
-
+                proxy_table = proxy_table[proxy_table['Тип'] != 'HTTP']
+                print(proxy_table)
                 for i, row in proxy_table.iterrows():
                     self.proxie_list_actual.append(row['Тип'].lower() + "://" + str(row['IP адрес']) + ":" + str(row['Порт']))
+
 
             except Exception as Err:
                 print(Err)
@@ -343,16 +143,24 @@ class Clicker_simple(object):
                 return ""
 
         while self.proxie_list_actual:
-                this = random.randint(0, len(self.proxie_list_actual))
+                this = random.randint(0, len(self.proxie_list_actual)-1)
                 print("Проверка прокси: {}".format(self.proxie_list_actual[this]))
-                options.add_argument("--proxy-server=%s" % self.proxie_list_actual[this])
-                driver_proxie_base = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+                self.options.add_argument("--proxy-server=%s" % self.proxie_list_actual[this])
+                self.driver = webdriver.Chrome(ChromeDriverManager().install(), options=self.options)
+                if ("ios" in user_agent.lower()) or ("android" in user_agent.lower()):
+                    self.driver.set_window_size(360, 720)
+                else:
+                    self.driver.set_window_size(1920, 1080)
+
                 try:
-                    driver_proxie_base.get("https://allgid.ru/rate/")
-                    wait = WebDriverWait(driver_proxie_base, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+                    self.driver.get(site)
+                    wait = WebDriverWait(self.driver, 10).until(EC.title_contains(self.Sites[site]["title_is"]))
+                    print("OK прокси ->", self.proxie_list_actual[this])
                     return self.proxie_list_actual[this]
                 except Exception:
                     print("битый прокси", self.proxie_list_actual.pop(this))
+                    print(len(self.proxie_list_actual))
+                    self.driver.quit()
 
         return ""
 
@@ -361,6 +169,9 @@ class Clicker_simple(object):
         
             try:        
                 link_ = self.driver.find_element_by_name(adv)
+                link_.location_once_scrolled_into_view
+                time.sleep(2)
+                webdriver.ActionChains(self.driver).move_to_element(link_).perform()
                 link_.click()
             except Exception:
                 pass
@@ -369,17 +180,32 @@ class Clicker_simple(object):
                 first_win = self.driver.window_handles[0]
                 new_win = self.driver.window_handles[1]
                 self.driver.switch_to.window(new_win)
-                wait = WebDriverWait(self.driver, 5). \
-                    until(EC.presence_of_element_located((By.TAG_NAME, 'a')))
+                try:
+                    wait = WebDriverWait(self.driver, 5). \
+                        until(EC.presence_of_element_located((By.TAG_NAME, 'a')))
     
-                adv_page_clicks = (int(random.expovariate(1.1)))
-    
-                for i in range(adv_page_clicks):
-                    try:
-                        link_adv = self.driver.find_element_by_tag_name('a')
-                        link_adv.click()
-                    except Exception:
-                        pass
+                    adv_page_clicks = (int(random.expovariate(0.4)) + 1)
+
+                    for i in range(adv_page_clicks):
+                        try:
+                            time.sleep(3)
+                            list_link_adv = self.driver.find_elements_by_tag_name('a')
+                            if list_link_adv:
+                                try:
+                                    link_adv = random.choice(list_link_adv[1:-1])
+                                except IndexError:
+                                    link_adv = list_link_adv[0]
+                            else:
+                                link_adv = ""
+                            if link_adv:
+                                link_adv.location_once_scrolled_into_view
+                                time.sleep(1)
+                                webdriver.ActionChains(self.driver).move_to_element(link_adv).perform()
+                                link_adv.click()
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
                 self.driver.switch_to.window(first_win)
          
 
@@ -387,7 +213,7 @@ class Clicker_simple(object):
 
     def random_link_click(self, delay):
 
-        time.sleep(delay)
+        time.sleep(random.randint(5, delay))
         
         try:
 
@@ -404,17 +230,23 @@ class Clicker_simple(object):
             try:
                 page_ = link_.text
                 if page_ and (page_ not in self.site_exclude):
+                    for j in list_links[0:list_links.index(link_):5]:
+                        j.location_once_scrolled_into_view
+                        ActionChains(self.driver).move_to_element(j).perform()
+                        time.sleep(random.randint(0, 2))
+                    link_.location_once_scrolled_into_view
+                    ActionChains(self.driver).move_to_element(link_).perform()
                     link_.click()
                     print(self.counter, page_)
                     #self.Log(page_)
-            except:
-                print("Плохой линк")
+            except Exception as Err:
+                print("Плохой линк -> ", Err)
     
 
     def click_random_3(self,
                        delay,
                        page="https://www.itbestsellers.ru/",
-                       q=6, #макс число просмотров пользователе-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------м
+                       q=6, #макс число просмотров пользователе---
                        ban=100):
 
         if page == self.site:
@@ -422,7 +254,7 @@ class Clicker_simple(object):
             #self.Log(self.site_home)
             print(self.counter, self.site_home)
 
-        for i in range(int(random.expovariate(0.4))):
+        for i in range(int(random.expovariate(0.2))):
 
             banner = random.randint(0, ban)
             if banner <= len(self.banner_list) - 1:
@@ -432,6 +264,7 @@ class Clicker_simple(object):
 
             self.counter += 1
             self.random_link_click(delay)
+        time.sleep(random.randint(5, delay))
 
         return self.counter
 
@@ -493,7 +326,7 @@ if __name__ == '__main__':
     random.seed()
 
     #print(sys.argv)
-    site, debug, ip, Q, delay, deep, ban, log = "https://www.itbestsellers.ru/", "", "", 0, 0, 0, 0, "log.xlsx"
+    site, debug, ip, Q, delay, deep, ban = "https://www.itbestsellers.ru/", "", "", 0, 0, 0, 0
     headless = "n"
     for sysarg in sys.argv[1:]:
         if "-site" in sysarg:
@@ -526,16 +359,16 @@ if __name__ == '__main__':
     if Q == 0:
         Q = 500
     if delay == 0:
-        delay = 3
+        delay = 10
     if deep == 0:
-        deep = 6
+        deep = 12
     if ban == 0:
-        ban = 100
+        ban = 20
     
 
     go = Clicker_simple(site=site,
                         counter=counter_,
-                        logfile=log,
+                        #logfile=log,
                         ip=ip,
                         headless=headless)
 
@@ -550,34 +383,41 @@ if __name__ == '__main__':
         delay_ = int(lag / delay_time_rel())
         time.sleep(delay_)
 
-        try:
+        #try:
+        if delay_:
             # str_agent = '--user-agent="' + random.choice(go.user_agents) + '"'
             # print(str_agent)
-            user_agent = go.user_agents_base.iloc[random.randint(0, len(go.user_agents_base))]
-            str_agent = '--user-agent="' + user_agent + '"'
-            print(str_agent)
-            go.options.add_argument(str_agent)
+            # user_agent = go.user_agents_base.iloc[random.randint(0, len(go.user_agents_base))]
+            # str_agent = '--user-agent="' + user_agent + '"'
+            # go.options.add_argument(str_agent)
 
-            proxy = go.Proxie_try()
+            proxy = "" #go.Proxie_try(user_agent=user_agent, site=go.site)
             if proxy:
-                go.options.add_argument("--proxy-server=%s" % proxy)
-                print(proxy)
+                #go.options.add_argument("--proxy-server=%s" % proxy)
+                print("работаем под прокси:", proxy)
+                #print(user_agent)
 
-
-            go.driver = webdriver.Chrome(ChromeDriverManager().install(), options=go.options)
-            if ("Windows" in str_agent) or ("Macintosh" in str_agent) or ("Linux" in str_agent):
-                print("DESKTOP")
-                go.driver.set_window_size(1920,1080)
             else:
-                print("MOBILE")
-                go.driver.set_window_size(360,720)
-            go.driver.get(go.site)
-        except Exception:
-            print("не вышло")
+                print("работаем БЕЗ прокси:", dt.now())
+                #print(str_agent)
+                go.options = webdriver.ChromeOptions()
+                #go.options.add_argument(str_agent)
+                go.options.add_argument('--disable-gpu')
+                go.driver = webdriver.Chrome(ChromeDriverManager().install(), options=go.options)
+                # if ("ios" in user_agent.lower()) or ("android" in user_agent.lower()):
+                #     go.driver.set_window_size(360, 720)
+                #     print("MOBILE")
+                # else:
+                #     go.driver.set_window_size(1920, 1080)
+                #     print("DESKTOP")
+                go.driver.get(go.site)
+
+        #except Exception as Err:
+            #print("не вышло ->", Err)
             #self.driver.close()
         print(i, delay_)
 
-        counter_ = go.click_random_3(page=site, delay=delay, ban=ban)
+        counter_ = go.click_random_3(page=site, delay=delay, ban=ban, q=deep)
         try:
             go.driver.quit()
         except Exception:
